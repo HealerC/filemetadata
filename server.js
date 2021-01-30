@@ -16,15 +16,28 @@ The app uses formidable to parse multipart data.
 
 May extend the app to accept multiple files and respond with each of them in an array */
 app.post('/api/fileanalyse', (req, res, next) => {
-	const form = formidable();				// Parses the file (can accept options)
+	const form = formidable({multiples: true});		// Allows multiple files
 
-	form.parse(req, (err, fields, file) => {
+	form.parse(req, (err, fields, files) => {
 		if (err) {
 			console.error(err.message);
 			res.json("An error occured: " + err.name);
 		}
-		const { name, size, type } = file.upfile;
-		res.json({name, type, size});
+		let fileList = {};
+		if ( Array.isArray(files.upfile) ) {	// An array is returned 
+												// if there are multiple files
+			fileList = files.upfile.map(data => {
+				return {
+					name: data.name,
+					size: data.size,
+					type: data.type
+				};
+			});
+		} else {		// A plain object is returned if there is only one file
+			const { name, size, type } = files.upfile;
+			Object.assign(fileList, {name, size, type});
+		}
+		res.json(fileList);
 	})
 })
 
