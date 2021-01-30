@@ -1,6 +1,7 @@
 var express = require('express');
 var cors = require('cors');
 require('dotenv').config()
+const formidable = require('formidable');
 
 var app = express();
 
@@ -11,7 +12,9 @@ app.get('/', function (req, res) {
     res.sendFile(process.cwd() + '/views/index.html');
 });
 
-
+app.post('/api/fileanalyse', (req, res, next) => {
+	const form = formidable();
+})
 
 
 const port = process.env.PORT || 3000;
