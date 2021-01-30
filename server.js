@@ -11,10 +11,11 @@ app.use('/public', express.static(process.cwd() + '/public'));
 app.get('/', function (req, res) {
     res.sendFile(process.cwd() + '/views/index.html');
 });
-/* The app is simple. Get the file uploaded and respond with the name, size and type
-The app uses formidable to parse multipart data.
 
-May extend the app to accept multiple files and respond with each of them in an array */
+/* The app is simple. Get the file uploaded and respond with the name, size and type
+as a JSON object.
+The app uses formidable to parse multipart data.
+The app also accepts multiple files and responds an array of the objects */
 app.post('/api/fileanalyse', (req, res, next) => {
 	const form = formidable({multiples: true});		// Allows multiple files
 
@@ -27,7 +28,7 @@ app.post('/api/fileanalyse', (req, res, next) => {
 		if ( Array.isArray(files.upfile) ) {	// An array is returned 
 												// if there are multiple files
 			fileList = files.upfile.map(data => {
-				return {
+				return {	// For each data, map out only the required properties
 					name: data.name,
 					size: data.size,
 					type: data.type
